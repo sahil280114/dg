@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  namespace: default
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+        - name: data-gen-container
+          image: ${IMAGE_NAME}
+          args: ["--use_case", ${DATA_USE_CASE}, "--input_format", ${DATA_INPUT_FORMAT}, "--output_format", ${DATA_OUTPUT_FORMAT}, "--num_samples", ${DATA_NUM_SAMPLES}]
+          env:
+            - name: QDRANT_API_KEY
+              value: ''
+            - name: QDRANT_HOST
+              value: ''
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  completionMode: NonIndexed
+  suspend: false
