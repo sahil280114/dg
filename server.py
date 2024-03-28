@@ -91,13 +91,12 @@ def generate_data():
             output_variables = dataset_parameters["output"]["variables"]["variables"]
         except:
             output_variables = None
-
         #Assemble input and output format  
         if input_variables is None:
             input_format = input_template
         else:
             input_format = process_variables(input_template, input_variables)   
-
+        print(input_variables)
         if output_variables is None:
             output_format = output_template
         else:

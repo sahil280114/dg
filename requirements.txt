@@ -1,5 +1,7 @@
-json_repair
+json-repair
 openai
 exa_py
 google-cloud-storage
-flask
+#flask
+pandas
+fastparquet

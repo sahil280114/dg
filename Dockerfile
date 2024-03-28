@@ -12,6 +12,5 @@ ADD . .
 
 ENV GOOGLE_APPLICATION_CREDENTIALS=gcs.json
 
-RUN python3 download.py
 
 CMD python3 main.py

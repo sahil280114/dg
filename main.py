@@ -1,5 +1,5 @@
 import argparse
-from model import load_model,format_prompt_data_gen,inference,process_variables,inference_with_context
+from model import load_model,format_prompt_data_gen,inference,process_variables_batch_job,inference_with_context
 import concurrent
 import pandas as pd
 import datetime
@@ -149,14 +149,14 @@ def main():
     if args.input_variables is None:
         full_input = args.input_template
     else:
-        input_variables = json.loads(args.input_variables)
-        full_input = process_variables(args.input_template, input_variables)
+        input_variables = json.loads(args.input_variables)["variables"]
+        full_input = process_variables_batch_job(args.input_template, input_variables)
     if args.output_variables is None:
         full_output = args.output_template
     else:
-        output_variables = json.loads(args.output_variables)
-        full_output = process_variables(args.output_template, output_variables)
-
+        output_variables = json.loads(args.output_variables)["variables"]
+        full_output = process_variables_batch_job(args.output_template, output_variables)
+   
     model = load_model()
     search_client = init_search_client()
 
@@ -171,7 +171,7 @@ def main():
     full_seed_data = seed_data_keywords + seed_data_web_docs
     if args.debug:
         save_seed_data(full_seed_data, args.id)
-
+    
     generate_and_filter_data(model,args.id,args.use_case, full_input, full_output, seed_data_keywords,seed_data_web_docs ,args.debug)
 
     artifact = {
