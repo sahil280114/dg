@@ -1,5 +1,5 @@
 import argparse
-from model import load_model,format_prompt_data_gen,inference,assemble_description,inference_with_context
+from model import load_model,format_prompt_data_gen,inference,process_variables,inference_with_context
 import concurrent
 import pandas as pd
 import datetime
@@ -10,6 +10,7 @@ import tqdm
 from seed_data import SeedDataPoint,web_documents_to_seed_data,keywords_to_seed_data,save_seed_data
 from search import init_search_client,search_docs
 import uuid
+import random
 
 def upload_blob(source_file_name:str)->str:
     """
@@ -69,7 +70,7 @@ def generate_sample_for_keyword(model,use_case:str,input_format:str,output_forma
                 "content": prompt
             }
         ]
-        for i in range(10):
+        for i in range(5):
             output = inference_with_context(model,messages)
             messages.append({
                 "role": "assistant",
@@ -101,13 +102,13 @@ def generate_and_filter_data(model,public_id:str, use_case:str, input_format:str
                 result = future.result()
                 if result!="":
                     result_samples.append(result)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=48) as executor:
             tasks = [executor.submit(generate_sample_for_keyword,model, use_case,input_format,output_format,seed_data) for seed_data in keywords]
             for future in tqdm.tqdm(concurrent.futures.as_completed(tasks),total=len(tasks),desc="Generating samples keywords"):
                 result = future.result()
                 if result!="":
-                    result_samples.append(result)
-                
+                    result_samples.extend(result)
+        random.shuffle(result_samples)
         # Processing of data samples
         prompts, responses = [], []
         for sample in result_samples:
@@ -149,12 +150,12 @@ def main():
         full_input = args.input_template
     else:
         input_variables = json.loads(args.input_variables)
-        full_input = assemble_description(args.input_template, input_variables)
+        full_input = process_variables(args.input_template, input_variables)
     if args.output_variables is None:
         full_output = args.output_template
     else:
         output_variables = json.loads(args.output_variables)
-        full_output = assemble_description(args.output_template, output_variables)
+        full_output = process_variables(args.output_template, output_variables)
 
     model = load_model()
     search_client = init_search_client()
@@ -181,10 +182,10 @@ def main():
         "seed_data": [data_point.to_dict() for data_point in full_seed_data],
     }
 
-    uuid = uuid.uuid4()
-    with open(f'{uuid}_artifact.json', 'w') as f:
+    uuid4 = uuid.uuid4()
+    with open(f'{uuid4}_artifact.json', 'w') as f:
         json.dump(artifact, f, indent=4)
-    upload_artifact(f'{uuid}_artifact.json')
+    upload_artifact(f'{uuid4}_artifact.json')
 
 if __name__ == "__main__":
     main()
