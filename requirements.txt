@@ -1,0 +1,5 @@
+json_repair
+openai
+exa_py
+google-cloud-storage
+flask
