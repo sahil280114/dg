@@ -149,13 +149,19 @@ def main():
     if args.input_variables is None:
         full_input = args.input_template
     else:
-        input_variables = json.loads(args.input_variables)["variables"]
-        full_input = process_variables_batch_job(args.input_template, input_variables)
+        try:
+            input_variables = json.loads(args.input_variables)["variables"]
+            full_input = process_variables_batch_job(args.input_template, input_variables)
+        except:
+            full_input = args.input_template
     if args.output_variables is None:
         full_output = args.output_template
     else:
-        output_variables = json.loads(args.output_variables)["variables"]
-        full_output = process_variables_batch_job(args.output_template, output_variables)
+        try:
+            output_variables = json.loads(args.output_variables)["variables"]
+            full_output = process_variables_batch_job(args.output_template, output_variables)
+        except:
+            full_output = args.output_template
    
     model = load_model()
     search_client = init_search_client()
