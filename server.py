@@ -4,6 +4,7 @@ import concurrent
 from model import load_model,format_prompt_data_gen,inference,process_variables
 import random
 from search import init_search_client,search_docs
+from seed_data import save_seed_data
 
 app = Flask(__name__)
 
@@ -96,7 +97,6 @@ def generate_data():
             input_format = input_template
         else:
             input_format = process_variables(input_template, input_variables)   
-        print(input_variables)
         if output_variables is None:
             output_format = output_template
         else:
@@ -108,15 +108,16 @@ def generate_data():
             num_samples = len(keywords)
 
         
-        mid_index = len(keywords)
+        mid_index = int(len(keywords) / 2)
 
         # Split the list into two halves
         seed_keywords = keywords[:mid_index]
         seed_for_web_docs = keywords[mid_index:]
 
         seed_web_docs = []
+
         for seed in seed_for_web_docs:
-            seed_web_docs.extend(search_docs(init_search_client(),seed),num_results=1)
+            seed_web_docs.extend(search_docs(init_search_client(),seed,num_results=1))
 
         data_generator = genereate_data(model,use_case,input_format,output_format,num_samples,seed_keywords,seed_web_docs)
 
