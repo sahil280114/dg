@@ -80,8 +80,8 @@ def generate_data():
         use_case = dataset_parameters["description"]
         keywords = dataset_parameters["knowledge"]["keyphrases"]
 
-        input_template = dataset_parameters["input"]["description"]
-        output_template = dataset_parameters["output"]["description"]
+        input_template = dataset_parameters["input"]["template"]
+        output_template = dataset_parameters["output"]["template"]
 
         try:
             input_variables = dataset_parameters["input"]["variables"]["variables"]
