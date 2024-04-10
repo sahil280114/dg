@@ -75,7 +75,7 @@ def generate_data():
         model = load_model()
 
         data = request.get_json()
-        dataset_parameters = data
+        dataset_parameters = data["parameters"]
 
         num_samples = data.get("limit", 15)
         use_case = dataset_parameters["description"]

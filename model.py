@@ -60,23 +60,23 @@ def process_variables(string_template, variables_dict):
     result = string_template
     for key, value in variables_dict.items():
         glaive_variable = f"<glaive_variable><name>{value['name']}</name><description>{value['description']}</description>"
-        type_var = list(value['type']["Type"].keys())[0].lower()
+        type_var = list(value['type']["type"].keys())[0].lower()
         if 'enum' in type_var:
-            enum_values = value['type']["Type"]
+            enum_values = value['type']["type"]
             glaive_variable += f"<type>{enum_values}</type>"
         elif 'string' in type_var:
-            type_details = value['type']["Type"]
+            type_details = value['type']["type"]
             glaive_variable += f"<type>{type_details}</type>"
         elif 'int32' in type_var:
-            type_details = value['type']["Type"]
+            type_details = value['type']["type"]
             glaive_variable += f"<type>{type_details}</type>"
         elif 'float' in type_var:
-            type_details = value['type']["Type"]
+            type_details = value['type']["type"]
             glaive_variable += f"<type>{type_details}</type>"
         elif 'bool' in type_var:
             glaive_variable += "<type>Bool</type>"
         elif 'array' in type_var:
-            array_variable = value['type']["Type"]['Array']['variable']
+            array_variable = value['type']["type"]['Array']['variable']
             array_type = array_variable['type']
             array_type_str = next(iter(array_type.keys()))
             array_size = value['type']['array'].get('size', {})
@@ -118,6 +118,10 @@ def format_prompt_data_gen(use_case: str,input_format:str,output_format:str,keyw
         return base_prompt
     base_prompt = f'''You are generating data which will be used to train a machine learning model.\n\nYou will be given a high-level description of the model we want to train which contains information about the use case and requirements,the format of inputs, the format of outputs and from that, you will generate one data sample, with a prompt/response pair.\n\nYou will do so in this format:\n```\nprompt\n-----------\n$prompt_goes_here\n-----------\n\nresponse\n-----------\n$response_goes_here\n-----------\n```\n\n\nFor each turn, make the example slightly more complex than the last, while ensuring diversity.\n\nMake sure your samples are unique and diverse, yet high-quality and complex enough to train a well-performing model. Change the diversity of output each turn based on previous ones.\n\nHere is the use case of the model we want to train:\n```{use_case}```.\n Here's the input format:\n```{input_format}```\n Here's the output format:\n```{output_format}```. \n The xml tags with <glaive_variable> are variables where you will put generated information of the given type and size. Do not include those tags in samples. Wherever possbile generate a diversity of variable types.'''
     return base_prompt
+
+def format_prompt_conditional_removal(sample:dict,condition:str) -> str:
+    prompt = f'''You are given a sample data point from the training set of an AI model which is as follows-\n Input-\n{sample['prompt']}\n Output-\n{sample['response']}\n Does this data point meet the following condition - \n {condition}? \n Return True or False, do not return anything else. If unsure, return False.'''
+    return prompt
 
 def inference(client, prompt: str) -> str:
     """
