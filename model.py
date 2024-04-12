@@ -60,23 +60,23 @@ def process_variables(string_template, variables_dict):
     result = string_template
     for key, value in variables_dict.items():
         glaive_variable = f"<glaive_variable><name>{value['name']}</name><description>{value['description']}</description>"
-        type_var = list(value['type']["type"].keys())[0].lower()
+        type_var = list(value['type'].keys())[0].lower()
         if 'enum' in type_var:
-            enum_values = value['type']["type"]
+            enum_values = value['type']
             glaive_variable += f"<type>{enum_values}</type>"
         elif 'string' in type_var:
-            type_details = value['type']["type"]
+            type_details = value['type']
             glaive_variable += f"<type>{type_details}</type>"
         elif 'int32' in type_var:
-            type_details = value['type']["type"]
+            type_details = value['type']
             glaive_variable += f"<type>{type_details}</type>"
         elif 'float' in type_var:
-            type_details = value['type']["type"]
+            type_details = value['type']
             glaive_variable += f"<type>{type_details}</type>"
         elif 'bool' in type_var:
             glaive_variable += "<type>Bool</type>"
         elif 'array' in type_var:
-            array_variable = value['type']["type"]['Array']['variable']
+            array_variable = value['type']['array']['variable']
             array_type = array_variable['type']
             array_type_str = next(iter(array_type.keys()))
             array_size = value['type']['array'].get('size', {})
@@ -85,7 +85,7 @@ def process_variables(string_template, variables_dict):
             size_str = f"min={min_size} max={max_size}" if min_size is not None and max_size is not None else ""
             glaive_variable += f"<type>Array</type><arrayType>{array_type_str}</arrayType><size>{size_str}</size>"
         elif 'struct' in type_var:
-            struct_fields = value['type']["type"]['struct']['fields']
+            struct_fields = value['type']['struct']['fields']
             force_json = value['type']['struct'].get('force_json', False)
             struct_fields_str = ""
             for field_name, field_variable in struct_fields.items():
