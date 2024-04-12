@@ -112,6 +112,8 @@ def generate_and_filter_data(model,public_id:str, use_case:str, input_format:str
         # Processing of data samples
         prompts, responses = [], []
         for sample in result_samples:
+            if "glaive_variable" in sample["prompt"] or "glaive_variable" in sample["response"] or "glaive_input" in sample["prompt"]:
+                continue
             try:
                 prompts.append(sample['prompt'])
                 responses.append(sample['response'])

@@ -125,6 +125,8 @@ def generate_data():
             def generate():
                 for sample in data_generator:
                     try:
+                        if "glaive_variable" in sample["prompt"] or "glaive_variable" in sample["response"] or "glaive_input" in sample["prompt"]:
+                            continue
                         response_object= f'''<glaive_input>{sample["prompt"]}</glaive_input><glaive_output>{sample["response"]}</glaive_output><|endofsample|>'''
                     except:
                         continue
