@@ -85,7 +85,7 @@ def process_variables(string_template, variables_dict):
             size_str = f"min={min_size} max={max_size}" if min_size is not None and max_size is not None else ""
             glaive_variable += f"<type>Array</type><arrayType>{array_type_str}</arrayType><size>{size_str}</size>"
         elif 'struct' in type_var:
-            struct_fields = value['type']["Type"]['struct']['fields']
+            struct_fields = value['type']["type"]['struct']['fields']
             force_json = value['type']['struct'].get('force_json', False)
             struct_fields_str = ""
             for field_name, field_variable in struct_fields.items():
@@ -141,6 +141,7 @@ def format_prompt_conditional_removal(sample:dict,condition:str) -> str:
 
 def format_prompt_edit_schema(text:str,old_schema:str,new_schema:str) -> str:
     prompt = f'You are given a text which has the following schema - \n{old_schema}\nYou are required to edit this text to follow a new schema - \n{new_schema}\nDo not return anything else. Return the same text in the new schema format without adding any <glaive_variable> because they are there to just show you the schema. \n Text-\n{text}'
+    return prompt
 def inference(client, prompt: str) -> str:
     """
     Generates an inference from the model based on the given prompt and sampling parameters.
